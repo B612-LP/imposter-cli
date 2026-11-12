@@ -106,35 +106,10 @@ mod raw_input {
     use std::io::{self, IsTerminal};
     use std::sync::atomic::{AtomicBool, Ordering};
 
-    #[repr(C)]
-    #[derive(Clone, Copy)]
-    struct Termios {
-        c_iflag: u32,
-        c_oflag: u32,
-        c_cflag: u32,
-        c_lflag: u32,
-        c_line: u8,
-        c_cc: [u8; 32],
-        c_ispeed: u32,
-        c_ospeed: u32,
-    }
-
-    const TCSANOW: i32 = 0;
-    const ICANON: u32 = 0o000002;
-    const ECHO: u32 = 0o000010;
-    const VMIN: usize = 6;
-    const VTIME: usize = 5;
-
-    #[link(name = "c")]
-    extern "C" {
-        fn tcgetattr(fd: i32, termios_p: *mut Termios) -> i32;
-        fn tcsetattr(fd: i32, optional_actions: i32, termios_p: *const Termios) -> i32;
-        #[link_name = "read"]
-        fn libc_read(fd: i32, buf: *mut std::ffi::c_void, count: usize) -> isize;
-    }
-
+    // Use the platform's actual termios layout and constants: Darwin's differ
+    // from Linux, and the wrong layout can make the input check block.
     static HAS_ORIG: AtomicBool = AtomicBool::new(false);
-    static mut ORIG_TERMIOS: Option<Termios> = None;
+    static mut ORIG_TERMIOS: Option<libc::termios> = None;
 
     pub struct RawModeGuard {
         active: bool,
@@ -145,8 +120,8 @@ mod raw_input {
             if !io::stdin().is_terminal() {
                 return Self { active: false };
             }
-            let mut orig = std::mem::MaybeUninit::<Termios>::uninit();
-            if unsafe { tcgetattr(0, orig.as_mut_ptr()) } != 0 {
+            let mut orig = std::mem::MaybeUninit::<libc::termios>::uninit();
+            if unsafe { libc::tcgetattr(0, orig.as_mut_ptr()) } != 0 {
                 return Self { active: false };
             }
             let orig = unsafe { orig.assume_init() };
@@ -156,10 +131,10 @@ mod raw_input {
             }
 
             let mut raw = orig;
-            raw.c_lflag &= !(ICANON | ECHO);
-            raw.c_cc[VMIN] = 0;
-            raw.c_cc[VTIME] = 0;
-            let ok = unsafe { tcsetattr(0, TCSANOW, &raw) } == 0;
+            raw.c_lflag &= !(libc::ICANON | libc::ECHO);
+            raw.c_cc[libc::VMIN] = 0;
+            raw.c_cc[libc::VTIME] = 0;
+            let ok = unsafe { libc::tcsetattr(0, libc::TCSANOW, &raw) } == 0;
             Self { active: ok }
         }
     }
@@ -176,15 +151,23 @@ mod raw_input {
         if HAS_ORIG.swap(false, Ordering::SeqCst) {
             if let Some(orig) = unsafe { ORIG_TERMIOS } {
                 unsafe {
-                    tcsetattr(0, TCSANOW, &orig);
+                    libc::tcsetattr(0, libc::TCSANOW, &orig);
                 }
             }
         }
     }
 
     pub fn check_esc() -> bool {
+        let mut pollfd = libc::pollfd {
+            fd: 0,
+            events: libc::POLLIN,
+            revents: 0,
+        };
+        if unsafe { libc::poll(&mut pollfd, 1, 0) } <= 0 || pollfd.revents & libc::POLLIN == 0 {
+            return false;
+        }
         let mut buf = [0u8; 32];
-        let n = unsafe { libc_read(0, buf.as_mut_ptr() as *mut std::ffi::c_void, buf.len()) };
+        let n = unsafe { libc::read(0, buf.as_mut_ptr() as *mut std::ffi::c_void, buf.len()) };
         if n > 0 {
             let slice = &buf[..n as usize];
             return slice.contains(&0x1b);
