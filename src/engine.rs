@@ -204,7 +204,7 @@ pub mod transcript {
                         pacing_pause(ui, 250, speed_factor, rng);
                     }
                 }
-                pacing_pause(ui, 600, speed_factor, rng);
+                pacing_pause(ui, 1000, speed_factor, rng);
             }
 
             if cfg.complexity != crate::types::Complexity::Low && turns % 2 == 1 {

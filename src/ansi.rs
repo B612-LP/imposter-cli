@@ -547,6 +547,7 @@ impl Ui {
         if self.color && self.theme == Theme::Light {
             self.write_raw(LIGHT_TEXT);
         }
+        let per_char_ms = (per_char_ms.max(20) as f32 * self.speed_factor).round() as u64;
         for ch in text.chars() {
             let mut buf = [0u8; 4];
             self.write_raw(ch.encode_utf8(&mut buf));
@@ -603,6 +604,7 @@ impl Ui {
                 self.write_raw(resolved_bg);
             }
         }
+        let per_char_ms = (per_char_ms.max(20) as f32 * self.speed_factor).round() as u64;
         for ch in text.chars() {
             let mut buf = [0u8; 4];
             self.write_raw(ch.encode_utf8(&mut buf));
@@ -664,7 +666,7 @@ impl Ui {
 
     /// Pace simulated code changes according to the selected speed.
     pub fn pause_diff_line(&mut self) {
-        self.pause((180.0 * self.speed_factor) as u64);
+        self.pause((450.0 * self.speed_factor) as u64);
     }
 
     pub fn exit_by_esc() -> ! {
