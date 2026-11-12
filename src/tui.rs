@@ -49,11 +49,11 @@ const SETTINGS_FIELDS: [SettingsField; 6] = [
 impl SettingsField {
     fn label(self) -> &'static str {
         match self {
-            SettingsField::Style => "Style",
-            SettingsField::Model => "Model",
-            SettingsField::Speed => "Speed",
-            SettingsField::Theme => "Theme",
-            SettingsField::Duration => "Duration",
+            SettingsField::Style => "风格",
+            SettingsField::Model => "模型",
+            SettingsField::Speed => "速度",
+            SettingsField::Theme => "主题",
+            SettingsField::Duration => "时长",
             SettingsField::Save => "",
         }
     }
@@ -358,8 +358,8 @@ impl App {
 
     fn save(&mut self) {
         self.status = Some(match self.cfg.save() {
-            Ok(path) => format!("\u{2713} Saved defaults to {}", path.display()),
-            Err(e) => format!("! Save failed: {e}"),
+            Ok(path) => format!("\u{2713} 已保存设置至 {}", path.display()),
+            Err(e) => format!("! 保存失败: {e}"),
         });
     }
 
@@ -376,23 +376,23 @@ impl App {
             let warn_lines = vec![
                 Line::from(""),
                 Line::from(Span::styled(
-                    "⚠️  Terminal Too Small",
+                    "⚠️  终端窗口太小",
                     TuiStyle::default()
                         .fg(pal.accent)
                         .add_modifier(Modifier::BOLD),
                 )),
                 Line::from(""),
                 Line::from(Span::styled(
-                    format!("Current: {}x{}", area.width, area.height),
+                    format!("当前: {}x{}", area.width, area.height),
                     TuiStyle::default().fg(pal.muted),
                 )),
                 Line::from(Span::styled(
-                    "Min required: 45x12",
+                    "最低要求: 45x12",
                     TuiStyle::default().fg(pal.dim),
                 )),
                 Line::from(""),
                 Line::from(Span::styled(
-                    "Please resize terminal window",
+                    "请调整终端窗口大小",
                     TuiStyle::default().fg(pal.fg),
                 )),
             ];
@@ -431,9 +431,9 @@ impl App {
 
     fn draw_tabs(&self, f: &mut Frame, area: Rect, pal: &Palette) {
         let titles = vec![
-            Line::from(" [1] MAIN "),
-            Line::from(" [2] SETTINGS "),
-            Line::from(" [3] ABOUT "),
+            Line::from(" [1] 首页 "),
+            Line::from(" [2] 设置     "),
+            Line::from(" [3] 关于 "),
         ];
 
         let selected_idx = match self.active_tab {
@@ -525,7 +525,7 @@ impl App {
             TuiStyle::default().fg(pal.accent),
         )));
         lines.push(Line::from(Span::styled(
-            "║               ▶  S T A R T  ◀                 ║",
+            "║                  ▶ 开始 ◀                     ║",
             TuiStyle::default()
                 .fg(pal.badge_fg)
                 .bg(pal.accent)
@@ -536,7 +536,7 @@ impl App {
             TuiStyle::default().fg(pal.accent),
         )));
         lines.push(Line::from(Span::styled(
-            "Press [Enter] or [Space] to Start",
+            "按 Enter 或空格开始",
             TuiStyle::default()
                 .fg(pal.dim)
                 .add_modifier(Modifier::ITALIC),
@@ -565,23 +565,23 @@ impl App {
                     .add_modifier(Modifier::BOLD),
             )),
             Line::from(Span::styled(
-                "\"아무것도 하지 않으면서, 최신 AI 코딩 에이전트로 바이브 코딩하는 척하기\"",
+                "不做实际工作，模拟 AI 编程助手运行",
                 TuiStyle::default().fg(pal.fg).add_modifier(Modifier::BOLD),
             )),
             Line::from(""),
             Line::from(vec![
-                Span::styled("Author  : ", TuiStyle::default().fg(pal.muted)),
+                Span::styled("作者    : ", TuiStyle::default().fg(pal.muted)),
                 Span::styled("deepthought", TuiStyle::default().fg(pal.accent)),
             ]),
             Line::from(vec![
-                Span::styled("Source  : ", TuiStyle::default().fg(pal.muted)),
+                Span::styled("项目    : ", TuiStyle::default().fg(pal.muted)),
                 Span::styled(
                     "https://github.com/partrita/imposter-cli",
                     TuiStyle::default().fg(pal.fg),
                 ),
             ]),
             Line::from(vec![
-                Span::styled("Original: ", TuiStyle::default().fg(pal.dim)),
+                Span::styled("原项目  : ", TuiStyle::default().fg(pal.dim)),
                 Span::styled(
                     "https://github.com/giacomo-b/rust-stakeholder",
                     TuiStyle::default().fg(pal.dim),
@@ -589,7 +589,7 @@ impl App {
             ]),
             Line::from(""),
             Line::from(Span::styled(
-                "─── USAGE & SHORTCUTS ───",
+                "─── 使用方法和快捷键 ───",
                 TuiStyle::default()
                     .fg(pal.accent)
                     .add_modifier(Modifier::BOLD),
@@ -599,10 +599,7 @@ impl App {
                     "  imposter           ",
                     TuiStyle::default().fg(pal.fg).add_modifier(Modifier::BOLD),
                 ),
-                Span::styled(
-                    ": 대화형 TUI 설정 마법사 실행",
-                    TuiStyle::default().fg(pal.muted),
-                ),
+                Span::styled(": 打开交互式设置", TuiStyle::default().fg(pal.muted)),
             ]),
             Line::from(vec![
                 Span::styled(
@@ -610,7 +607,7 @@ impl App {
                     TuiStyle::default().fg(pal.fg).add_modifier(Modifier::BOLD),
                 ),
                 Span::styled(
-                    ": 저장된 설정으로 바로 세션 실행",
+                    ": 使用已保存的设置直接运行",
                     TuiStyle::default().fg(pal.muted),
                 ),
             ]),
@@ -619,10 +616,7 @@ impl App {
                     "  imposter -s codex  ",
                     TuiStyle::default().fg(pal.fg).add_modifier(Modifier::BOLD),
                 ),
-                Span::styled(
-                    ": 지정한 스타일로 세션 직접 실행",
-                    TuiStyle::default().fg(pal.muted),
-                ),
+                Span::styled(": 使用指定风格直接运行", TuiStyle::default().fg(pal.muted)),
             ]),
             Line::from(vec![
                 Span::styled(
@@ -631,14 +625,11 @@ impl App {
                         .fg(pal.accent)
                         .add_modifier(Modifier::BOLD),
                 ),
-                Span::styled(
-                    ": 세션 실행 중 언제든 즉시 종료",
-                    TuiStyle::default().fg(pal.muted),
-                ),
+                Span::styled(": 随时退出", TuiStyle::default().fg(pal.muted)),
             ]),
             Line::from(""),
             Line::from(Span::styled(
-                "Minimal dependencies · Single-threaded · Zero token cost",
+                "轻量 · 单线程 · 不消耗 Token",
                 TuiStyle::default().fg(pal.dim),
             )),
         ];
@@ -649,7 +640,7 @@ impl App {
             .border_style(TuiStyle::default().fg(pal.border))
             .style(TuiStyle::default().bg(pal.bg).fg(pal.fg))
             .title(Span::styled(
-                " About ",
+                " 关于 ",
                 TuiStyle::default()
                     .fg(pal.accent)
                     .add_modifier(Modifier::BOLD),
@@ -711,7 +702,7 @@ impl App {
 
             let mut spans = vec![
                 Span::styled(pointer, TuiStyle::default().fg(pal.accent)),
-                Span::styled(format!("{:<10}", field.label()), label_style),
+                Span::styled(format!("{}      ", field.label()), label_style),
             ];
             spans.extend(self.render_field_value(*field, selected, pal));
             lines.push(Line::from(spans));
@@ -731,17 +722,13 @@ impl App {
             .border_style(TuiStyle::default().fg(pal.border))
             .style(TuiStyle::default().bg(pal.bg).fg(pal.fg))
             .title(Span::styled(
-                " Settings ",
+                " 设置 ",
                 TuiStyle::default()
                     .fg(pal.accent)
                     .add_modifier(Modifier::BOLD),
             ));
-        f.render_widget(
-            Paragraph::new(lines)
-                .block(block)
-                .wrap(Wrap { trim: false }),
-            area,
-        );
+        // Keep each field on a single row so mouse hit testing remains aligned.
+        f.render_widget(Paragraph::new(lines).block(block), area);
     }
 
     fn draw_settings_actions(&self, f: &mut Frame, area: Rect, pal: &Palette) {
@@ -765,7 +752,7 @@ impl App {
                     format!(" {save_cursor}"),
                     TuiStyle::default().fg(pal.accent),
                 ),
-                Span::styled(" [ SAVE CONFIGURATION (Enter) ] ", save_style),
+                Span::styled(" [ 保存设置 (Enter) ] ", save_style),
             ]),
         ];
 
@@ -777,7 +764,7 @@ impl App {
             .border_style(TuiStyle::default().fg(action_border_color))
             .style(TuiStyle::default().bg(pal.bg).fg(pal.fg))
             .title(Span::styled(
-                " Save ",
+                " 保存 ",
                 TuiStyle::default()
                     .fg(pal.accent)
                     .add_modifier(Modifier::BOLD),
@@ -829,16 +816,16 @@ impl App {
                                 .fg(pal.accent)
                                 .add_modifier(Modifier::BOLD),
                         ),
-                        Span::styled("  (Enter save, Esc cancel)", dim),
+                        Span::styled("  (Enter 确认，Esc 取消)", dim),
                     ];
                 }
                 let display = match &self.cfg.model {
                     Some(m) if !m.is_empty() => m.clone(),
-                    _ => format!("auto ({})", self.cfg.style.skin().model),
+                    _ => "自动".to_string(),
                 };
                 vec![
-                    Span::styled(format!("{display:<24}"), val_style),
-                    Span::styled("(Enter to edit)", dim),
+                    Span::styled(format!("{display} "), val_style),
+                    Span::styled("(Enter 编辑)", dim),
                 ]
             }
             SettingsField::Speed => {
@@ -849,7 +836,19 @@ impl App {
                     + 1;
                 vec![
                     Span::styled("\u{2039} ", arrow_style),
-                    Span::styled(format!("{:<12}", self.cfg.speed.as_str()), val_style),
+                    Span::styled(
+                        format!(
+                            "{:<12}",
+                            match self.cfg.speed.as_str() {
+                                "slow" => "慢",
+                                "normal" => "正常",
+                                "fast" => "快",
+                                "turbo" => "极速",
+                                other => other,
+                            }
+                        ),
+                        val_style,
+                    ),
                     Span::styled("\u{203a} ", arrow_style),
                     Span::styled(format!("({idx}/{})", crate::types::Speed::ALL.len()), dim),
                 ]
@@ -862,15 +861,15 @@ impl App {
                 let inactive_style = TuiStyle::default().fg(pal.dim);
                 if dark_active {
                     vec![
-                        Span::styled("[\u{25d0} dark ]", active_style),
+                        Span::styled("[\u{25d0} 深色 ]", active_style),
                         Span::raw(" "),
-                        Span::styled(" \u{263c} light ", inactive_style),
+                        Span::styled(" \u{263c} 浅色 ", inactive_style),
                     ]
                 } else {
                     vec![
-                        Span::styled(" \u{25d0} dark  ", inactive_style),
+                        Span::styled(" \u{25d0} 深色  ", inactive_style),
                         Span::raw(" "),
-                        Span::styled("[\u{263c} light]", active_style),
+                        Span::styled("[\u{263c} 浅色]", active_style),
                     ]
                 }
             }
@@ -878,24 +877,24 @@ impl App {
                 if self.editing && selected {
                     return vec![
                         Span::styled(
-                            format!("{} min\u{2588}", self.buf),
+                            format!("{} 分钟\u{2588}", self.buf),
                             TuiStyle::default()
                                 .fg(pal.accent)
                                 .add_modifier(Modifier::BOLD),
                         ),
-                        Span::styled("  (0 = forever)", dim),
+                        Span::styled("  (0 = 不限时)", dim),
                     ];
                 }
                 let text = if self.cfg.duration == 0 {
-                    "forever (\u{221e})".to_string()
+                    "不限时 (\u{221e})".to_string()
                 } else {
-                    format!("{} min", self.cfg.duration)
+                    format!("{} 分钟", self.cfg.duration)
                 };
                 vec![
                     Span::styled("\u{2039} ", arrow_style),
                     Span::styled(format!("{text:<12}"), val_style),
                     Span::styled("\u{203a} ", arrow_style),
-                    Span::styled("(\u{2190}/\u{2192} \u{00b1}5m, Enter type)", dim),
+                    Span::styled("(±5 分钟)", dim),
                 ]
             }
             SettingsField::Save => Vec::new(),
@@ -903,43 +902,15 @@ impl App {
     }
 
     fn field_description(&self, field: SettingsField) -> (&'static str, String) {
-        match field {
-            SettingsField::Style => {
-                let desc = match self.cfg.style {
-                    Style::Claude => "Anthropic Claude Code v2.1: Clawd banner, \u{276f} prompt, \u{25cf} tools & \u{23bf} tree output.",
-                    Style::Classic => "Legacy stakeholder system log: progress bars, symbol linker & p99 metrics.",
-                    Style::Codex => "OpenAI Codex CLI (codex-rs): >_ header, \u{203a} prompt, \u{2022} Explored/Edited/Ran blocks.",
-                    Style::Opencode => "OpenCode TUI: SplitBorder \u{2503} backgroundPanel header/prompt/tools, Thinking:, \u{2192} Read & \u{25a3} Build.",
-                    Style::Pi => "earendil-works/pi: \u{2580}\u{2588}\u{2580} header, #343541 userMessageBg & #283228 toolSuccessBg boxes, footer.ts.",
-                    Style::Antigravity => "Google Antigravity CLI (agy): dotted horizon banner, \u{25cb} trajectory tools & /statusline HUD.",
-                    Style::Hollywood => "Hollywood Hacker: matrix hex dump torrent, mainframe override gauges & ACCESS GRANTED banners.",
-                };
-                ("Active CLI Persona", desc.to_string())
-            }
-            SettingsField::Model => (
-                "AI Model Designation",
-                "Custom model name (e.g. claude-3-7-sonnet, gpt-4o, gemini-2.5-pro). Leave empty for style default."
-                    .to_string(),
-            ),
-            SettingsField::Speed => (
-                "Transcript Playback Speed",
-                "Slow (0.5x), Normal (1.0x), Fast (2.0x), Turbo (5.0x) with natural jitter variations."
-                    .to_string(),
-            ),
-            SettingsField::Theme => (
-                "Color Theme (Dark / Light)",
-                "Adapts accent, text, border, and diff contrast for dark or light terminals (shortcut: t)."
-                    .to_string(),
-            ),
-            SettingsField::Duration => (
-                "Auto-Stop Timer",
-                "0 runs until Ctrl-C. Set 1-999 minutes to exit cleanly on a deadline.".to_string(),
-            ),
-            SettingsField::Save => (
-                "Persist Defaults",
-                "Writes current settings to ~/.config/imposter/config.toml.".to_string(),
-            ),
-        }
+        let description = match field {
+            SettingsField::Style => "选择要模拟的终端风格。",
+            SettingsField::Model => "自定义模型名称；留空使用默认值。",
+            SettingsField::Speed => "设置模拟输出的播放速度。",
+            SettingsField::Theme => "适配深色或浅色终端；按 t 切换。",
+            SettingsField::Duration => "0 为不限时；可设置 1–999 分钟。",
+            SettingsField::Save => "将当前设置保存为默认值。",
+        };
+        ("", description.to_string())
     }
 
     fn draw_preview(&self, f: &mut Frame, area: Rect, pal: &Palette) {
@@ -1376,7 +1347,7 @@ impl App {
             .style(TuiStyle::default().bg(pal.bg).fg(pal.fg))
             .title(Span::styled(
                 format!(
-                    " Live Preview ({} \u{00b7} {}) ",
+                    " 效果预览 ({} \u{00b7} {}) ",
                     self.cfg.style.as_str(),
                     self.cfg.theme.as_str()
                 ),
@@ -1402,45 +1373,45 @@ impl App {
         } else if self.editing {
             Line::from(vec![
                 keycap("Enter", accent),
-                Span::raw(" Commit   "),
+                Span::raw(" 确认   "),
                 keycap("Backspace", accent),
-                Span::raw(" Delete   "),
+                Span::raw(" 删除   "),
                 keycap("Esc", accent),
-                Span::raw(" Cancel"),
+                Span::raw(" 取消"),
             ])
         } else {
             match self.active_tab {
                 Tab::Main => Line::from(vec![
                     keycap("Enter/Space", accent),
-                    Span::raw(" Start  "),
+                    Span::raw(" 开始  "),
                     keycap("Tab", accent),
-                    Span::raw(" Next Tab  "),
+                    Span::raw(" 切换页面  "),
                     keycap("q / Esc", accent),
-                    Span::raw(" Quit"),
+                    Span::raw(" 退出"),
                 ]),
                 Tab::Settings => Line::from(vec![
                     keycap("\u{2191}\u{2193}/j,k", accent),
-                    Span::raw(" Select  "),
+                    Span::raw(" 选择  "),
                     keycap("\u{2190}\u{2192}/Space", accent),
-                    Span::raw(" Cycle  "),
+                    Span::raw(" 切换  "),
                     keycap("Enter", accent),
-                    Span::raw(" Edit/Save  "),
+                    Span::raw(" 编辑/保存  "),
                     keycap("t", accent),
-                    Span::raw(" Theme  "),
+                    Span::raw(" 主题  "),
                     keycap("Ctrl+S", accent),
-                    Span::raw(" Save  "),
+                    Span::raw(" 保存  "),
                     keycap("Tab", accent),
-                    Span::raw(" Next Tab  "),
+                    Span::raw(" 切换页面  "),
                     keycap("q/Esc", accent),
-                    Span::raw(" Quit"),
+                    Span::raw(" 退出"),
                 ]),
                 Tab::About => Line::from(vec![
                     keycap("Enter/Space", accent),
-                    Span::raw(" Start  "),
+                    Span::raw(" 开始  "),
                     keycap("Tab", accent),
-                    Span::raw(" Next Tab  "),
+                    Span::raw(" 切换页面  "),
                     keycap("q / Esc", accent),
-                    Span::raw(" Quit"),
+                    Span::raw(" 退出"),
                 ]),
             }
         };

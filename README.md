@@ -1,5 +1,7 @@
 # imposter
 
+> 本 fork 将交互式设置界面汉化为简体中文；模拟的 AI 工作内容、命令行参数和配置格式保持原样。按 `imposter -i` 打开设置，使用 Tab 切换页面、方向键选择选项、Enter 确认；设置完成后返回首页按 Enter 开始。原项目：[partrita/imposter-cli](https://github.com/partrita/imposter-cli)。
+
 > [!NOTE]
 > 아무것도 하지 않으면서, 최신 AI 코딩 에이전트로 바이브 코딩하는 것처럼 보이는 CLI.
 
