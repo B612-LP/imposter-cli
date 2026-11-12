@@ -174,7 +174,7 @@ impl Renderer for Opencode {
                     new += 1;
                 }
             }
-            ui.pause(16);
+            ui.pause_diff_line();
         }
         panel_blank(ui, ansi::OC_PANEL_BORDER);
         ui.blank();

@@ -406,7 +406,7 @@ pub(super) fn patch_indented(ui: &mut Ui, prefix: &str, diff: &[&str], start: u6
                 new += 1;
             }
         }
-        ui.pause(16);
+        ui.pause_diff_line();
     }
 }
 

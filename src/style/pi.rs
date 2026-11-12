@@ -174,7 +174,7 @@ impl Renderer for Pi {
                     new += 1;
                 }
             }
-            ui.pause(16);
+            ui.pause_diff_line();
         }
         box_blank(ui, ansi::PI_TOOL_OK_BG);
         ui.blank();

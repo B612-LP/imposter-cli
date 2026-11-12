@@ -81,8 +81,8 @@ fn main() {
     if color {
         ansi::enable_ansi();
     }
-    let animate = color && !args.fast;
-    let mut ui = Ui::new(color, animate, cfg.theme);
+    let animate = is_tty && !args.fast;
+    let mut ui = Ui::new(color, animate, cfg.theme, cfg.speed.delay_factor());
     let mut rng = rng::Rng::new(args.seed);
 
     let deadline = if cfg.duration > 0 {

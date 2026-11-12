@@ -69,15 +69,34 @@ pub fn run_session<S: Session>(
 }
 
 fn pacing_pause(ui: &mut Ui, base_ms: u64, speed_factor: f32, rng: &mut Rng) {
+    ui.pause(pacing_delay(base_ms, speed_factor, rng));
+}
+
+fn pacing_delay(base_ms: u64, speed_factor: f32, rng: &mut Rng) -> u64 {
     let scaled = (base_ms as f32 * speed_factor) as u64;
     let jitter_range = (scaled as f32 * 0.3).round() as i64;
     let jitter = if jitter_range > 0 {
-        rng.range((-jitter_range) as u64, jitter_range as u64) as i64 - jitter_range
+        rng.range(0, (jitter_range * 2) as u64) as i64 - jitter_range
     } else {
         0
     };
-    let final_ms = ((scaled as i64 + jitter).max(15)) as u64;
-    ui.pause(final_ms);
+    ((scaled as i64 + jitter).max(15)) as u64
+}
+
+#[cfg(test)]
+mod pacing_tests {
+    use super::*;
+
+    #[test]
+    fn jitter_varies_around_base_delay() {
+        let mut rng = Rng::new(Some(42));
+        let delays: Vec<_> = (0..100)
+            .map(|_| pacing_delay(1000, 1.0, &mut rng))
+            .collect();
+        assert!(delays.iter().all(|&ms| (700..=1300).contains(&ms)));
+        assert!(delays.iter().any(|&ms| ms < 1000));
+        assert!(delays.iter().any(|&ms| ms > 1000));
+    }
 }
 
 // Re-export transcript engine for AI styles
@@ -185,7 +204,7 @@ pub mod transcript {
                         pacing_pause(ui, 250, speed_factor, rng);
                     }
                 }
-                pacing_pause(ui, 55, speed_factor, rng);
+                pacing_pause(ui, 600, speed_factor, rng);
             }
 
             if cfg.complexity != crate::types::Complexity::Low && turns % 2 == 1 {

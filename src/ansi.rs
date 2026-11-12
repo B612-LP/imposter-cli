@@ -430,10 +430,11 @@ pub struct Ui {
     pub width: usize,
     pub animate: bool,
     pub theme: Theme,
+    speed_factor: f32,
 }
 
 impl Ui {
-    pub fn new(color: bool, animate: bool, theme: Theme) -> Self {
+    pub fn new(color: bool, animate: bool, theme: Theme, speed_factor: f32) -> Self {
         let width = current_terminal_width();
         Self {
             out: BufWriter::with_capacity(8 * 1024, io::stdout()),
@@ -442,6 +443,7 @@ impl Ui {
             width,
             animate,
             theme,
+            speed_factor,
         }
     }
 
@@ -631,7 +633,12 @@ impl Ui {
 
     /// Frame pacing in one place. Without a TTY (or with `--fast`) everything
     /// runs six times faster instead of sleeping for real seconds.
-    pub fn pause(&self, ms: u64) {
+    pub fn pause(&mut self, ms: u64) {
+        // Display pending output before waiting; otherwise buffered lines appear
+        // together even when the renderer pauses between them.
+        if self.animate {
+            self.flush();
+        }
         let ms = if self.animate { ms } else { ms / 6 };
         if ms == 0 {
             if check_esc() {
@@ -653,6 +660,11 @@ impl Ui {
         if check_esc() {
             Self::exit_by_esc();
         }
+    }
+
+    /// Pace simulated code changes according to the selected speed.
+    pub fn pause_diff_line(&mut self) {
+        self.pause((180.0 * self.speed_factor) as u64);
     }
 
     pub fn exit_by_esc() -> ! {
